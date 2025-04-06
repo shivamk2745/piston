@@ -5,15 +5,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     curl git python3 python3-pip build-essential \
-    docker.io docker-compose sudo \
     && apt-get clean
 
-# Clone the piston repo
-RUN git clone https://github.com/engineer-man/piston.git /piston
+# Copy local code instead of cloning
+COPY . /piston
 WORKDIR /piston
 
-# Install piston (includes runtime setup)
-RUN ./scripts/install.sh
+# Install python dependencies
+RUN pip3 install -r requirements.txt
 
 # Expose the default API port
 EXPOSE 2000
