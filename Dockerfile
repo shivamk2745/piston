@@ -2,36 +2,29 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies including nodejs and npm
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     curl git python3 python3-pip build-essential nodejs npm docker.io docker-compose \
     && apt-get clean
 
-# Copy local code instead of cloning
+# Copy code
 COPY . /piston
 WORKDIR /piston
 
-# List directory contents to debug
+# Debug: Show directory structure
 RUN ls -la && ls -la api && ls -la cli
 
-# Install CLI dependencies and make it executable
-RUN cd cli && npm install && cd .. && \
-    chmod +x cli/index.js
+# Install CLI dependencies
+RUN cd cli && npm install && cd ..
 
-# Check if requirements.txt exists, and install if it does
-RUN if [ -f api/requirements.txt ]; then \
-        cd api && pip3 install -r requirements.txt && cd ..; \
-    else \
-        # Install commonly required packages for Flask API
-        pip3 install flask requests; \
-    fi
+# Install Flask API dependencies
+RUN pip3 install flask requests
 
-# Install language packages
-RUN ./cli/index.js ppman install python && \
-    ./cli/index.js ppman install nodejs && \
-    ./cli/index.js ppman install cpp
+# Install language runtimes using the CLI
+RUN node cli/index.js ppman install python && \
+    node cli/index.js ppman install nodejs && \
+    node cli/index.js ppman install cpp
 
-# Expose the default API port
 EXPOSE 2000
 
 CMD ["python3", "api/main.py"]
