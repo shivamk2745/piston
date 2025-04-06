@@ -26,4 +26,4 @@ RUN cd cli && npm install && cd ..
 EXPOSE 2000
 
 # Start the API server
-CMD ["node", "api/index.js"]
+CMD ["node", "api/src/index.js"]
