@@ -11,12 +11,20 @@ RUN apt-get update && apt-get install -y \
 COPY . /piston
 WORKDIR /piston
 
+# List directory contents to debug
+RUN ls -la && ls -la api && ls -la cli
+
 # Install CLI dependencies and make it executable
 RUN cd cli && npm install && cd .. && \
     chmod +x cli/index.js
 
-# Install API dependencies 
-RUN cd api && pip3 install -r requirements.txt && cd ..
+# Check if requirements.txt exists, and install if it does
+RUN if [ -f api/requirements.txt ]; then \
+        cd api && pip3 install -r requirements.txt && cd ..; \
+    else \
+        # Install commonly required packages for Flask API
+        pip3 install flask requests; \
+    fi
 
 # Install language packages
 RUN ./cli/index.js ppman install python && \
