@@ -12,7 +12,7 @@ COPY . /piston
 WORKDIR /piston
 
 # Install python dependencies
-RUN pip3 install -r requirements.txt
+RUN ./scripts/install.sh
 
 # Expose the default API port
 EXPOSE 2000
