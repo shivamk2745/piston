@@ -1,9 +1,14 @@
 FROM ubuntu:20.04
 
 # Install required dependencies
-RUN apt-get update && apt-get install -y \
-    curl git nodejs npm \
-    && apt-get clean
+
+RUN apt-get update && \
+    apt-get install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get install -y \
+    curl git python3 python3-pip build-essential nodejs npm docker.io docker-compose && \
+    apt-get clean
 
 # Clone the repository
 RUN git clone https://github.com/engineer-man/piston /piston
