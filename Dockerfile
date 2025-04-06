@@ -2,28 +2,26 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
+# Install dependencies including nodejs and npm
 RUN apt-get update && apt-get install -y \
-    curl git python3 python3-pip build-essential \
+    curl git python3 python3-pip build-essential nodejs npm docker.io docker-compose \
     && apt-get clean
 
 # Copy local code instead of cloning
 COPY . /piston
 WORKDIR /piston
 
-# Create scripts directory and install script
-RUN mkdir -p scripts && \
-    echo '#!/bin/bash\n\
-pip3 install -e cli/\n\
-pip3 install -e api/\n\
-./cli/index.js ppman list\n\
-# Install language packages\n\
-./cli/index.js ppman install python\n\
-./cli/index.js ppman install nodejs\n\
-./cli/index.js ppman install cpp\
-' > scripts/install.sh && \
-    chmod +x scripts/install.sh && \
-    ./scripts/install.sh
+# Install CLI dependencies and make it executable
+RUN cd cli && npm install && cd .. && \
+    chmod +x cli/index.js
+
+# Install API dependencies 
+RUN cd api && pip3 install -r requirements.txt && cd ..
+
+# Install language packages
+RUN ./cli/index.js ppman install python && \
+    ./cli/index.js ppman install nodejs && \
+    ./cli/index.js ppman install cpp
 
 # Expose the default API port
 EXPOSE 2000
