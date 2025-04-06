@@ -18,5 +18,4 @@ RUN ./scripts/install.sh
 # Expose the default API port
 EXPOSE 2000
 
-# Run the Piston server
 CMD ["python3", "main.py"]
